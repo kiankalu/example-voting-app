@@ -1,1 +1,5 @@
-This is a sample 
+## Worker Java App
+
+* Build Status
+
+[![Build Status](https://e03b-105-168-251-33.eu.ngrok.io/buildStatus/icon?job=instavote%2Fworker-build)](https://e03b-105-168-251-33.eu.ngrok.io/job/instavote/job/worker-build/)
