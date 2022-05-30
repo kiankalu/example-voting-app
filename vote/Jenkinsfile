@@ -16,9 +16,9 @@ pipeline{
 
            steps{
           
-               echo 'Compiling app for vote Phython app'
-               dir('result'){
-                 sh 'pip install -i requirements.txt'
+               echo 'Compiling app for vote Python app'
+               dir('vote'){
+                 sh 'pip install -r requirements.txt'
                }
            } 
         }
@@ -32,7 +32,7 @@ pipeline{
 
                 echo 'Running unit test for vote Python app'   
                 dir('vote'){
-                sh 'nosetests -v'
+                sh  nosetests -v'
                }
            }
         }
@@ -42,7 +42,7 @@ pipeline{
      post{
          always{
  
-             echo 'The pipeline has run completed for the NodeJs app'
+             echo 'The pipeline has run completed for the vote Python app'
          
          }
          success{
