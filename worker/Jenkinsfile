@@ -8,6 +8,12 @@ pipeline{
 
      stages{
         stage('build'){
+            when{
+         
+             changeset '**/worker/**'
+           
+            }
+
             steps {
                      
               echo 'Compiling worker app'
@@ -20,19 +26,38 @@ pipeline{
         }
        
         stage('test'){
+            when{
+            
+             changeset '**/worker/**'
+           
+            }
+
             steps {
                 
               echo 'Testing worker app'
+              dir('worker'){
+                sh 'mvn clean test'
+              }
                
             }
         
         }
          
         stage('package'){
+            when{ 
+             branch 'master'
+             changeset '**/worker/**'   
+           
+            }
+
             steps{
                 
               echo 'Packaging'
-                
+              dir('worker'){
+                sh 'mvn package -DskipTests'
+                archiveArtifacts artifacts: '**/target/*.jar',fingerprint: true
+
+              }  
                 
             }
         
@@ -45,9 +70,19 @@ pipeline{
     post{
          
         always{
-               
-              echo 'This pipeline has been completed'
+             
+              echo 'Pipeline for worker has been completed'
         }
+
+        success{
+
+              slackSend (channel:"delivery-continuous-integration", message: "Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        }
+         failure{
+
+              slackSend (channel:"delivery-continuous-integration", message: "Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        }
+
 }
     
     
