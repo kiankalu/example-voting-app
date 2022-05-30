@@ -1,94 +1,57 @@
 pipeline{
-     
-     agent any
-     
-     tools{
-       maven 'Maven 3.6.1'      
-     }
-
-     stages{
-        stage('build'){
-            when{
-         
-             changeset '**/worker/**'
-           
-            }
-
-            steps {
-                     
-              echo 'Compiling worker app'
-              dir('worker'){
-                sh 'mvn compile'
-              }
-                
-            }
-        
+        agent{
+             docker{
+              image 'maven:3.6.1-jdk-8-slim'
+              args '-v $HOME/.m2:/root/.m2'
+             }
         }
-       
-        stage('test'){
-            when{
-            
-             changeset '**/worker/**'
-           
-            }
-
-            steps {
-                
-              echo 'Testing worker app'
-              dir('worker'){
-                sh 'mvn clean test'
-              }
-               
-            }
-        
-        }
-         
-        stage('package'){
-            when{ 
-             branch 'master'
-             changeset '**/worker/**'   
-           
-            }
-
+        stages{
+          stage('build'){
             steps{
-                
-              echo 'Packaging'
-              dir('worker'){
-                sh 'mvn package -DskipTests'
-                archiveArtifacts artifacts: '**/target/*.jar',fingerprint: true
+             echo 'building worker app'
+             dir('worker'){
+              sh 'mvn compile'
+             }
+           }
+         }
 
-              }  
-                
+         stage('test'){
+           steps{
+            echo 'running unit tests on worker app'
+            dir('worker'){
+             sh 'mvn clean test'
             }
-        
-        } 
-         
-         
-         
-    }
+          }
+        }
+        stage('package'){
+          steps{
+            echo 'packaging worker app into a jarfile'
+            dir('worker'){
+             sh 'mvn package -DskipTests'
+             archiveArtifacts artifacts: '**/target/*.jar',
+             fingerprint: true
+            }
+          }
+        }
+
+       }
      
-    post{
+       post{
          
         always{
              
-              echo 'Pipeline for worker has been completed'
+            echo 'Pipeline for worker has been completed'
         }
-
         success{
 
-              slackSend (channel:"delivery-continuous-integration", message: "Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+            slackSend (channel:"delivery-continuous-integration", message: "Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
         }
          failure{
 
-              slackSend (channel:"delivery-continuous-integration", message: "Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+            slackSend (channel:"delivery-continuous-integration", message: "Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
         }
 
-}
-    
-    
-    
-    
-    
+      }
     
     
 }

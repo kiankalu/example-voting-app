@@ -1,0 +1,64 @@
+pipeline{
+
+      agent{
+             
+        docker{
+          
+          image 'node:8.16.0-alpine'
+        }   
+      } 
+
+      stages{
+         stage('build'){
+           when{ 
+            changeset "**/result/**"
+           }
+
+           steps{
+          
+               echo 'Compiling app for result NodeJS app'
+               dir('result'){
+                 sh 'npm install'
+               }
+           } 
+        }
+
+        stage('test'){
+            when{
+            changeset "**/result/**"
+           }
+
+           steps{
+
+                echo 'Running unit test for result NodeJS app'   
+                dir('result'){
+                sh 'npm test'
+               }
+           }
+        }
+
+     }
+     
+     post{
+         always{
+ 
+             echo 'The pipeline has run completed for the NodeJs app'
+         
+         }
+         success{
+             slackSend (channel:"delivery-continuous-integration", message:"Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+         }
+
+         failure{
+             slackSend (channel:"delivery-continuous-integration", message:"Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+         
+         }
+
+       
+    }
+
+
+
+
+
+}
