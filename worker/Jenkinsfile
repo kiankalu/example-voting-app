@@ -73,6 +73,16 @@ pipeline{
              
               echo 'Pipeline for worker has been completed'
         }
+
+        success{
+
+              slackSend (channel:"delivery-continuous-integration", message: "Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        }
+         failure{
+
+              slackSend (channel:"delivery-continuous-integration", message: "Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        }
+
 }
     
     
