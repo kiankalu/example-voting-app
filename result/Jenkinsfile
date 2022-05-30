@@ -9,27 +9,32 @@ pipeline{
 
       stages{
          stage('build'){
+           when{ 
             changeset "**/result/**"
-          
-            steps{
+           }
+
+           steps{
           
                echo 'Compiling app for result NodeJS app'
                dir('result'){
                  sh 'npm install'
                }
-            } 
+           } 
         }
 
         stage('test'){
+            when{
             changeset "**/result/**"
+           }
 
-            steps{
+           steps{
 
                 echo 'Running unit test for result NodeJS app'   
                 dir('result'){
+                sh 'npm install'
                 sh 'npm test'
                }
-            }
+           }
         }
 
      }
