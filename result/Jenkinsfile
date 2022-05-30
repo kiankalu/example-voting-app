@@ -1,0 +1,58 @@
+pipeline{
+
+      agent any
+      
+      tools{
+        
+         NodeJS 'NodeJS.8.9.0' 
+      }
+      stages{
+         stage('build'){
+            changeset '**/result/**'
+          
+            steps{
+          
+               echo 'Compiling app for result NodeJS app'
+               dir('result'){
+                 sh 'npm install'
+               }
+            } 
+        }
+
+        stage('test'){
+            changeset '**/result/**'
+
+            steps{
+
+                echo 'Running unit test for result NodeJS app'   
+                dir('result'){
+                sh 'npm test'
+               }
+            }
+        }
+
+     }
+     
+     post{
+         always{
+ 
+             echo 'The pipeline has run completed for the NodeJs app'
+         
+         }
+         success{
+             slackSend (channel:"delivery-continuous-integration", message:"Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+         }
+
+         failure{
+             slackSend (channel:"delivery-continuous-integration", message:"Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+         
+         }
+
+       
+    }
+
+
+
+
+
+}
