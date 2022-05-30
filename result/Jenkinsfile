@@ -9,7 +9,7 @@ pipeline{
 
       stages{
          stage('build'){
-            changeset '**/result/**'
+            changeset "**/result/**"
           
             steps{
           
@@ -21,7 +21,7 @@ pipeline{
         }
 
         stage('test'){
-            changeset '**/result/**'
+            changeset "**/result/**"
 
             steps{
 
