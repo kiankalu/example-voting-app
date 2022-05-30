@@ -36,7 +36,7 @@ pipeline{
                 
               echo 'Packaging'
               dir('worker'){
-                sh 'package'
+                sh 'mvn package'
               }  
                 
             }
