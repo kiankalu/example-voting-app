@@ -32,7 +32,7 @@ pipeline{
 
                 echo 'Running unit test for vote Python app'   
                 dir('vote'){
-                sh  nosetests -v'
+                sh 'nosetests -v'
                }
            }
         }
