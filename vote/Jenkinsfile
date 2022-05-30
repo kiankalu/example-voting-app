@@ -1,0 +1,64 @@
+pipeline{
+
+      agent{
+             
+        docker{
+          
+          image 'python:2.7.16-slim'
+        }   
+      } 
+
+      stages{
+         stage('build'){
+           when{ 
+            changeset "**/vote/**"
+           }
+
+           steps{
+          
+               echo 'Compiling app for vote Phython app'
+               dir('result'){
+                 sh 'pip install -i requirements.txt'
+               }
+           } 
+        }
+
+        stage('test'){
+            when{
+            changeset "**/vote/**"
+           }
+
+           steps{
+
+                echo 'Running unit test for vote Python app'   
+                dir('vote'){
+                sh 'nosetests -v'
+               }
+           }
+        }
+
+     }
+     
+     post{
+         always{
+ 
+             echo 'The pipeline has run completed for the NodeJs app'
+         
+         }
+         success{
+             slackSend (channel:"delivery-continuous-integration", message:"Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+         }
+
+         failure{
+             slackSend (channel:"delivery-continuous-integration", message:"Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+         
+         }
+
+       
+    }
+
+
+
+
+
+}
