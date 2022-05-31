@@ -58,6 +58,7 @@ pipeline{
         stage('docker-package'){
           agent any
           when{
+           changeset '**/worker/**'
            branch 'master'
            
           } 
