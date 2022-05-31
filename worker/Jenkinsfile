@@ -23,14 +23,15 @@ pipeline{
             }
           }
         }
-        stage('package'){
+        stage('docker-package'){
           steps{
-            echo 'packaging worker app into a jarfile'
-            dir('worker'){
-             sh 'mvn package -DskipTests'
-             archiveArtifacts artifacts: '**/target/*.jar',
-             fingerprint: true
-            }
+            echo 'packaging maven app with docker'
+            script{
+              docker.withRegistry('https://index.docker.io/v1', 'dockerlogin')
+              def workerImage = docker.build("kpkia1/worker:v${env.BUILD_ID}","./worker")
+              workerImage.push()
+              workerImage.push({$env.BRANCH_NAME}) 
+           }
           }
         }
 
