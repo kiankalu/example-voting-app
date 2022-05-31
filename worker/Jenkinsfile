@@ -56,9 +56,13 @@ pipeline{
          }
        
         stage('docker-package'){
-          agent any 
+          agent any
+          when{
+           branch 'master'
+           changeset '**/worker/**'
+          } 
           steps{
-            echo 'packaging maven app with docker'
+            echo 'packaging docker app'
             script{
               docker.withRegistry('https://index.docker.io/v1/','dockerlogin')
               def workerImage = docker.build("kpkia1/worker:v${env.BUILD_ID}","./worker")
