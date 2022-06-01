@@ -47,7 +47,7 @@ pipeline{
           
           }
           steps{
-            echo 'Packaging worker app'
+            echo 'Packaging worker application'
             dir('worker'){
               sh 'mvn package -DskipTests'
               archiveArtifacts artifacts: '**/target/*.jar', fingerprint:true
