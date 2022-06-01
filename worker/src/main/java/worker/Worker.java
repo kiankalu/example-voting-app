@@ -11,7 +11,7 @@ class Worker {
       Jedis redis = connectToRedis("redis");
       Connection dbConn = connectToDB("db");
 
-      System.err.println("Watching vote queue");
+      System.err.println("Watching voting queue ");
 
       while (true) {
         String voteJSON = redis.blpop(0, "votes").get(1);
